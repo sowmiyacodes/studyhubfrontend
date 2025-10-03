@@ -1,0 +1,64 @@
+/* Navbar base */
+.navbar {
+  font-weight: 500;
+  background: #ffffff !important;
+  padding: 0.8rem 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Brand styling */
+.navbar-brand {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0d6efd !important; /* Bootstrap primary */
+  letter-spacing: 0.5px;
+}
+
+.navbar-brand:hover {
+  color: #0b5ed7 !important;
+}
+
+/* Center menu links */
+.nav-link {
+  margin: 0 12px;
+  font-size: 1rem;
+  color: #333 !important;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  color: #0d6efd !important;
+  transform: translateY(-2px);
+}
+
+/* Right side login/register */
+.ms-auto .nav-link {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.ms-auto .nav-link:first-child {
+  border: 1px solid #0d6efd;
+  color: #0d6efd !important;
+}
+
+.ms-auto .nav-link:first-child:hover {
+  background: #0d6efd;
+  color: #fff !important;
+}
+
+.ms-auto .nav-link:last-child {
+  background: #0d6efd;
+  color: #fff !important;
+  margin-left: 8px;
+}
+
+.ms-auto .nav-link:last-child:hover {
+  background: #0b5ed7;
+}
+
+/* Navbar shadow on scroll */
+.navbar.scrolled {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
