@@ -1,6 +1,7 @@
 import {useState} from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 const RegisterForm = () => {
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
     roll_no: '',
     email: '',
@@ -11,6 +12,8 @@ const RegisterForm = () => {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
   const handleChange = (e) => {
     const {name,value} = e.target;
     setFormData({
@@ -18,12 +21,13 @@ const RegisterForm = () => {
       [name] : value,
 
     });
-    setErrors((prev)=>({
-    ...prev,
-    [name]:''
-  }));
+    //clear the errors when typing
+    setErrors((prev) => ({
+       ...prev,
+       [name] : '', 
+    }));
   };
-  
+
   const validateData = () =>
   {
       let newerrors = {};
@@ -32,30 +36,53 @@ const RegisterForm = () => {
       if(!formData.display_name.trim()) newerrors.display_name = 'Required';
       if(!formData.password.trim()) newerrors.password = 'Required';
       if(!formData.confirm_password.trim()) newerrors.confirm_password = 'Required';
-
+      if (formData.password !== formData.confirm_password) newerrors.confirm_password = 'Passwords do not match.';
       return newerrors;
   } ; 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('')
     const validationErrors = validateData();
      if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-            setMessage('Errors found!!')
+      setMessage('Errors found!!')
       console.log(validationErrors);
       return;
     }
-    else
-    {
-       setMessage('')
-    } 
+
+    setSubmitting(true);    
     console.log('Form is submitted');
+    try {
+      
+      const response = await fetch('http://localhost:5000/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      console.log(data)  
+      if (response.ok) {
+        setMessage(data.message ||'Registration successful!' );
+        navigate('/login')
+        
+      } else {
+        setMessage(data.message || 'Registration failed.');
+      }
+    } catch (error) {
+      setMessage('An error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
 
   }
 return (
 <div className="container mt-4" style={{ maxWidth: '400px' }}>
-      <h1 className="mb-4">Register</h1>
-            {message && <div className="alert alert-info">{message}</div>}
+      <h2 className="mb-4">Register</h2>
+      {message && <div className="alert alert-info">{message}</div>}
       <form  onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="roll_no" className="form-label">Roll No</label>
@@ -122,7 +149,7 @@ return (
           />
           {errors.confirm_password && <div className="invalid-feedback">{errors.confirm_password}</div>}
         </div>
-        <button type="submit" className="btn btn-primary w-100">Register</button>
+        <button type="submit" className="btn btn-primary w-100">{submitting ? 'Registering...' : 'Register'}</button>
       </form>
 
       <p className="mt-3 text-center">
