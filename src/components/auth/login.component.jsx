@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -55,18 +56,26 @@ const LoginForm = () => {
         setMessage(data.message || "Login successful!");
 
         // ✅ store token in localStorage (from backend response)
-        if (data.accessToken) {
-          localStorage.setItem("token", data.accessToken);
-          localStorage.setItem("user", JSON.stringify({
-            id: data.id,
-            username: data.username,
-            email: data.email,
-            roles: data.roles
-          }));
-        }
+        if (response.ok) {
+  setMessage(data.message || "Login successful!");
+
+  // store token in localStorage (optional)
+  if (data.accessToken) {
+    localStorage.setItem("token", data.accessToken);
+  }
+
+  // ✅ store display_name and email in cookies
+  if (data.display_name && data.email) {
+    Cookies.set("display_name", data.display_name, { expires: 1 }); // expires in 1 day
+    Cookies.set("email", data.email, { expires: 1 });
+  }
+
+  // redirect after login
+  navigate("/");
+}
 
         // redirect after login
-        navigate("/dashboard");
+        navigate("/");
       } else {
         setMessage(data.message || "Login failed.");
       }
