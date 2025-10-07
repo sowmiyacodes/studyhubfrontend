@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { UserContext } from "../context/usercontext.component.js"; // adjust path
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext); // ✅ use context
 
   const [formData, setFormData] = useState({
     email: "",
@@ -20,10 +22,7 @@ const LoginForm = () => {
       ...formData,
       [name]: value
     });
-    setErrors((prev) => ({
-      ...prev,
-      [name]: ''
-    }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const validateData = () => {
@@ -55,26 +54,21 @@ const LoginForm = () => {
       if (response.ok) {
         setMessage(data.message || "Login successful!");
 
-        // ✅ store token in localStorage (from backend response)
-        if (response.ok) {
-  setMessage(data.message || "Login successful!");
+        // store display_name and email in cookies
+        if (data.display_name && data.email) {
+          Cookies.set("display_name", data.display_name, { expires: 1 });
+          Cookies.set("email", data.email, { expires: 1 });
 
-  // store token in localStorage (optional)
-  if (data.accessToken) {
-    localStorage.setItem("token", data.accessToken);
-  }
+          // ✅ update Navbar immediately
+          setUser({ display_name: data.display_name, email: data.email });
+        }
 
-  // ✅ store display_name and email in cookies
-  if (data.display_name && data.email) {
-    Cookies.set("display_name", data.display_name, { expires: 1 }); // expires in 1 day
-    Cookies.set("email", data.email, { expires: 1 });
-  }
+        // optional: store token if needed
+        if (data.accessToken) {
+          localStorage.setItem("token", data.accessToken);
+        }
 
-  // redirect after login
-  navigate("/");
-}
-
-        // redirect after login
+        // redirect to Home
         navigate("/");
       } else {
         setMessage(data.message || "Login failed.");
@@ -124,7 +118,7 @@ const LoginForm = () => {
       </form>
 
       <p className="mt-3 text-center">
-        Dont have an account ?{" "}
+        Dont have an account?{" "}
         <Link to="/register" className="text-decoration-none">
           Register now
         </Link>{" "}

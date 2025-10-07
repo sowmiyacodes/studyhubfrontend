@@ -1,27 +1,20 @@
+// src/components/header/header.component.jsx
 import { Navbar, Nav, Container, Dropdown } from "react-bootstrap";
 import { Outlet, Link } from "react-router-dom";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useContext } from "react";
 import Cookies from "js-cookie";
+import { UserContext } from "../context/usercontext.component"; // adjust path
+import "./header.component.css";
 
 const Header = () => {
-  const [user, setUser] = useState(null);
-
-  // read cookies on mount and whenever login changes
-  useEffect(() => {
-    const displayName = Cookies.get("display_name");
-    const email = Cookies.get("email");
-    if (displayName && email) {
-      setUser({ display_name: displayName, email });
-    } else {
-      setUser(null);
-    }
-  }, []); // optional: add a dependency if you trigger login state change
+  // use global user state from context
+  const { user, setUser } = useContext(UserContext);
 
   const handleLogout = () => {
     Cookies.remove("display_name");
     Cookies.remove("email");
     Cookies.remove("token");
-    setUser(null);
+    setUser(null); // immediately update Navbar
   };
 
   return (
