@@ -9,8 +9,7 @@ import Header from './components/header/header.component.jsx';
 import RegisterForm from './components/auth/register.component.jsx';
 import LoginForm from './components/auth/login.component.jsx';
 import { UserContext } from './components/context/usercontext.component.js';
-
-const Home = () => <div className="container mt-5">Home dummy content</div>;
+import Home from './pages/home.jsx'; 
 
 const App = () => {
   // initialize user state from cookies
