@@ -11,6 +11,10 @@ import LoginForm from './components/auth/login.component.jsx';
 import { UserContext } from './components/context/usercontext.component.js';
 import Home from './pages/home.jsx'; 
 
+
+import Dashboard from "./pages/admin/Dashboard";
+import AdminLayout from "./layouts/AdminLayout";
+
 const App = () => {
   // initialize user state from cookies
   const [user, setUser] = useState(() => {
@@ -29,6 +33,10 @@ const App = () => {
           {/* Optional: catch-all redirect */}
           <Route path="*" element={<Home />} />
         </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+		          <Route index element={<Dashboard />} />
+		          <Route path="dashboard" element={<Dashboard />} />
+		    </Route>
       </Routes>
     </UserContext.Provider>
   );
