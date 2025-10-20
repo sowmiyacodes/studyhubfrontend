@@ -50,7 +50,7 @@ const LoginForm = () => {
       });
 
       const data = await response.json();
-
+      console.log(data); 
       if (response.ok) {
         setMessage(data.message || "Login successful!");
 
@@ -58,9 +58,13 @@ const LoginForm = () => {
         if (data.display_name && data.email) {
           Cookies.set("display_name", data.display_name, { expires: 1 });
           Cookies.set("email", data.email, { expires: 1 });
-
+           Cookies.set("user_access", data.user_access, { expires: 1 });
           // ✅ update Navbar immediately
-          setUser({ display_name: data.display_name, email: data.email });
+          setUser({
+    display_name: data.display_name,
+    email: data.email,
+    user_access: data.user_access,
+  });
         }
 
         // optional: store token if needed

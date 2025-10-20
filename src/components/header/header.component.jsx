@@ -37,6 +37,9 @@ const Header = () => {
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.ItemText>{user.email}</Dropdown.ItemText>
+                    {user.user_access === "admin" && (
+    <Dropdown.Item as={Link} to="/admin">Admin Panel</Dropdown.Item>
+  )}
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                   </Dropdown.Menu>
