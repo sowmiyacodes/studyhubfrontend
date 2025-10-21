@@ -1,33 +1,35 @@
-// src/components/admin/AdminHeader.js
+import React, { useContext } from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
-import { Outlet, Link } from "react-router-dom";
-import { Fragment } from "react/jsx-runtime";
+import { UserContext } from "../../components/context/usercontext.component";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import './AdminHeader.css';
 
 const AdminHeader = () => {
- return (
-   <Fragment>
-    <Navbar expand="lg" bg="light" className="border-bottom shadow-sm">
-      <Container>
-        {/* Brand on left */}
-        <Navbar.Brand as={Link} to="/">StudyHub</Navbar.Brand>
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
-        {/* Hamburger toggler */}
-        <Navbar.Toggle aria-controls="main-navbar-nav" />
+  const handleLogout = () => {
+    Cookies.remove("display_name");
+    Cookies.remove("email");
+    Cookies.remove("user_access");
+    setUser(null);
+    navigate("/");
+  };
 
-        {/* Collapsible content */}
-        <Navbar.Collapse id="main-navbar-nav">         
-
-          {/* Right side login/register */}
-          <Nav className="ms-auto">
-           <div className="d-flex align-items-center gap-3">
-              <span className="me-3">Hello, Admin </span>
-              <button  > Logout </button>
-            </div> 
-          </Nav>
-        </Navbar.Collapse>
+  return (
+    <Navbar bg="primary" variant="dark" className="px-3">
+      <Container fluid>
+        <Navbar.Brand className="brand">StudyHub Admin</Navbar.Brand>
+        <Nav className="ms-auto">
+          <span className="text-white me-3">{user?.display_name}</span>
+          <button className="btn btn-light btn-sm" onClick={handleLogout}>
+            Logout
+          </button>
+        </Nav>
       </Container>
-    </Navbar>   
-    </Fragment>
+    </Navbar>
   );
 };
+
 export default AdminHeader;

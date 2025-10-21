@@ -1,0 +1,41 @@
+/* Header container */
+.admin-header {
+  background-color: #1f497d; /* professional blue */
+  color: white;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Brand text */
+.admin-header .brand {
+  color: white; /* ensure StudyHub Admin text is white */
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.admin-header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-header .user-info span {
+  font-weight: 500;
+}
+
+.admin-header .logout-btn {
+  background-color: #ffffff;
+  color: #1f497d;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.admin-header .logout-btn:hover {
+  background-color: #e6e6e6;
+}

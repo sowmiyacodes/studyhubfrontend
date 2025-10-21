@@ -1,35 +1,37 @@
-import React, { useState } from 'react';
-import { Nav } from 'react-bootstrap';
-import { FaUsers, FaPlus, FaEye, FaSignOutAlt, FaBars, FaChevronLeft } from 'react-icons/fa';
+import React from "react";
+import { Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { FaUsers, FaPlus, FaEye, FaSignOutAlt, FaBars } from "react-icons/fa";
 import './AdminSidebar.css';
 
-const AdminSidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
-
-  const toggleSidebar = () => setCollapsed(!collapsed);
-
-  const navItems = [
-    { icon: <FaUsers />, label: 'Users', href: '#' },
-    { icon: <FaPlus />, label: 'Add', href: '#' },
-    { icon: <FaEye />, label: 'View', href: '#' },
-    { icon: <FaSignOutAlt />, label: 'Logout', href: '#' },
-  ];
-
+const AdminSidebar = ({ collapsed, toggleSidebar }) => {
   return (
-    <div className={`sidebar d-flex flex-column ${collapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header p-3 d-flex justify-content-between align-items-center">
-        {!collapsed && <h5 className="m-0">Admin Panel</h5>}
-        <button className="btn btn-sm btn-light" onClick={toggleSidebar}>
-          {collapsed ? <FaBars /> : <FaChevronLeft />}
+    <div
+      className={`bg-dark text-white d-flex flex-column transition-sidebar`}
+      style={{ width: collapsed ? "80px" : "250px", minHeight: "100vh" }}
+    >
+      <div className="d-flex align-items-center justify-content-between p-3 border-bottom">
+        {!collapsed && <h5>Admin Panel</h5>}
+        <button onClick={toggleSidebar} className="btn btn-sm btn-light">
+          <FaBars />
         </button>
       </div>
-      <Nav className="flex-column p-2">
-        {navItems.map((item, idx) => (
-          <Nav.Link key={idx} href={item.href} className="d-flex align-items-center">
-            <span className="icon">{item.icon}</span>
-            {!collapsed && <span className="label ms-2">{item.label}</span>}
-          </Nav.Link>
-        ))}
+      <Nav className="flex-column p-2 gap-2">
+        <Nav.Link as={Link} to="/admin/dashboard" className="text-white">
+          <FaUsers /> {!collapsed && "Dashboard"}
+        </Nav.Link>
+        <Nav.Link as={Link} to="/admin/users" className="text-white">
+          <FaUsers /> {!collapsed && "Users"}
+        </Nav.Link>
+        <Nav.Link as={Link} to="/admin/add" className="text-white">
+          <FaPlus /> {!collapsed && "Add"}
+        </Nav.Link>
+        <Nav.Link as={Link} to="/admin/view" className="text-white">
+          <FaEye /> {!collapsed && "View"}
+        </Nav.Link>
+        <Nav.Link as={Link} to="/" className="text-white">
+          <FaSignOutAlt /> {!collapsed && "Logout"}
+        </Nav.Link>
       </Nav>
     </div>
   );
