@@ -1,62 +1,71 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Modal, Button } from "react-bootstrap";
 
 const View = () => {
   const [papers, setPapers] = useState([]);
-  const [viewMode, setViewMode] = useState("table"); // "table" or "card"
-  const [showModal, setShowModal] = useState(false);
+  const [viewMode, setViewMode] = useState("table");
   const [selectedPaper, setSelectedPaper] = useState(null);
 
   useEffect(() => {
+    const fetchPapers = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/question_paper/view");
+        setPapers(res.data);
+      } catch (err) {
+        console.error("Error fetching papers:", err);
+      }
+    };
     fetchPapers();
   }, []);
 
-  const fetchPapers = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/question_paper/view");
-      setPapers(res.data);
-    } catch (err) {
-      console.error("Error fetching papers:", err);
+  // ✅ Convert any Google Drive URL or ID to a proper preview URL
+  const getPreviewUrl = (url) => {
+    if (!url) return "";
+    
+    // Extract fileId from URL
+    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const fileId = fileIdMatch ? fileIdMatch[1] : null;
+
+    if (fileId) {
+      return `https://drive.google.com/file/d/${fileId}/preview`;
     }
-  };
 
-  const handlePreview = (paper) => {
-    setSelectedPaper(paper);
-    setShowModal(true);
-  };
+    // If backend sends only fileId
+    if (/^[a-zA-Z0-9_-]{25,}$/.test(url)) {
+      return `https://drive.google.com/file/d/${url}/preview`;
+    }
 
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedPaper(null);
+    // fallback
+    return url.replace("/view", "/preview");
   };
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="fw-bold text-primary">Question Papers</h3>
-        <div>
-          <Button
-            variant={viewMode === "table" ? "primary" : "outline-primary"}
-            className="me-2"
+    <div className="container my-5">
+      <h2 className="text-center mb-4 fw-bold">📘 View Question Papers</h2>
+
+      {/* View Toggle */}
+      <div className="d-flex justify-content-end mb-3">
+        <div className="btn-group">
+          <button
+            className={`btn btn-outline-primary ${viewMode === "table" ? "active" : ""}`}
             onClick={() => setViewMode("table")}
           >
             Table View
-          </Button>
-          <Button
-            variant={viewMode === "card" ? "primary" : "outline-primary"}
+          </button>
+          <button
+            className={`btn btn-outline-primary ${viewMode === "card" ? "active" : ""}`}
             onClick={() => setViewMode("card")}
           >
             Card View
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* ---------- TABLE VIEW ---------- */}
+      {/* Table View */}
       {viewMode === "table" && (
-        <div className="table-responsive shadow-sm">
-          <table className="table table-hover align-middle">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle shadow-sm">
             <thead className="table-dark">
               <tr>
                 <th>Regulation</th>
@@ -68,21 +77,20 @@ const View = () => {
               </tr>
             </thead>
             <tbody>
-              {papers.map((paper, index) => (
-                <tr key={index}>
+              {papers.map((paper) => (
+                <tr key={paper._id}>
                   <td>{paper.regulation}</td>
                   <td>{paper.semester}</td>
                   <td>{paper.subjectCode}</td>
                   <td>{paper.year}</td>
                   <td>{paper.exam}</td>
                   <td>
-                    <Button
-                      size="sm"
-                      variant="outline-success"
-                      onClick={() => handlePreview(paper)}
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => setSelectedPaper(paper)}
                     >
                       View
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -91,34 +99,26 @@ const View = () => {
         </div>
       )}
 
-      {/* ---------- CARD VIEW ---------- */}
+      {/* Card View */}
       {viewMode === "card" && (
-        <div className="row">
-          {papers.map((paper, index) => (
-            <div className="col-md-4 mb-4" key={index}>
+        <div className="row g-4">
+          {papers.map((paper) => (
+            <div key={paper._id} className="col-md-4 col-sm-6">
               <div className="card shadow-sm border-0 h-100">
                 <div className="card-body">
-                  <h5 className="card-title text-primary fw-semibold">
+                  <h5 className="card-title fw-bold text-primary">
                     {paper.subjectCode}
                   </h5>
-                  <p className="card-text mb-1">
-                    <strong>Regulation:</strong> {paper.regulation}
-                  </p>
-                  <p className="card-text mb-1">
-                    <strong>Semester:</strong> {paper.semester}
-                  </p>
-                  <p className="card-text mb-1">
-                    <strong>Year:</strong> {paper.year}
-                  </p>
-                  <p className="card-text mb-3">
-                    <strong>Exam:</strong> {paper.exam}
-                  </p>
-                  <Button
-                    variant="outline-success"
-                    onClick={() => handlePreview(paper)}
+                  <p><strong>Regulation:</strong> {paper.regulation}</p>
+                  <p><strong>Semester:</strong> {paper.semester}</p>
+                  <p><strong>Year:</strong> {paper.year}</p>
+                  <p><strong>Exam:</strong> {paper.exam}</p>
+                  <button
+                    className="btn btn-outline-success w-100"
+                    onClick={() => setSelectedPaper(paper)}
                   >
                     View Paper
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -126,40 +126,43 @@ const View = () => {
         </div>
       )}
 
-      {/* ---------- MODAL PREVIEW ---------- */}
-      <Modal show={showModal} onHide={closeModal} size="xl" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedPaper?.subjectCode} – {selectedPaper?.exam}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ height: "80vh" }}>
-          {selectedPaper ? (
-            <iframe
-              src={selectedPaper.url.replace("/view", "/preview")}
-              title="Question Paper"
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
-            ></iframe>
-          ) : (
-            <p>No paper selected.</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeModal}>
-            Close
-          </Button>
-          <Button
-            variant="primary"
-            href={selectedPaper?.url}
-            target="_blank"
-            rel="noreferrer"
+      {/* Modal for Inline Preview */}
+      {selectedPaper && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          onClick={() => setSelectedPaper(null)}
+        >
+          <div
+            className="modal-dialog modal-xl modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
           >
-            Open in New Tab
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title">
+                  {selectedPaper.subjectCode} – Question Paper
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setSelectedPaper(null)}
+                ></button>
+              </div>
+              <div className="modal-body p-0" style={{ height: "80vh" }}>
+                <iframe
+                  src={getPreviewUrl(selectedPaper.url)}
+                  width="100%"
+                  height="100%"
+                  style={{ border: "none" }}
+                  allow="autoplay"
+                  title="Question Paper Preview"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
