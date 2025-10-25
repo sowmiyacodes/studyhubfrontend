@@ -1,0 +1,57 @@
+/* ----------------- Table Styling ----------------- */
+.table-container {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.table-container thead {
+  background-color: #0f4faaff;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.table-container tbody tr {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+/* Alternate Row Stripe */
+.table-container tbody tr:nth-child(even) {
+  background-color: #f2f2f2 !important;
+}
+.table-container tbody tr:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+/* Row Hover */
+.table-container tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* View Button Hover */
+.table-container .view-btn {
+  transition: all 0.3s;
+}
+.table-container .view-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ----------------- Card Styling ----------------- */
+.custom-card {
+  border-radius: 1rem;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.custom-card .card-title {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}

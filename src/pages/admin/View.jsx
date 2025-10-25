@@ -19,30 +19,19 @@ const View = () => {
     fetchPapers();
   }, []);
 
-  // ✅ Convert any Google Drive URL or ID to a proper preview URL
   const getPreviewUrl = (url) => {
     if (!url) return "";
-    
-    // Extract fileId from URL
     const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
     const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
-    if (fileId) {
-      return `https://drive.google.com/file/d/${fileId}/preview`;
-    }
-
-    // If backend sends only fileId
-    if (/^[a-zA-Z0-9_-]{25,}$/.test(url)) {
-      return `https://drive.google.com/file/d/${url}/preview`;
-    }
-
-    // fallback
+    if (fileId) return `https://drive.google.com/file/d/${fileId}/preview`;
+    if (/^[a-zA-Z0-9_-]{25,}$/.test(url)) return `https://drive.google.com/file/d/${url}/preview`;
     return url.replace("/view", "/preview");
   };
 
   return (
     <div className="container my-5">
-      <h2 className="text-center mb-4 fw-bold">📘 View Question Papers</h2>
+      <h2 className="text-center mb-4 fw-bold text-primary">📘 View Question Papers</h2>
 
       {/* View Toggle */}
       <div className="d-flex justify-content-end mb-3">
@@ -64,9 +53,9 @@ const View = () => {
 
       {/* Table View */}
       {viewMode === "table" && (
-        <div className="table-responsive">
-          <table className="table table-hover align-middle shadow-sm">
-            <thead className="table-dark">
+        <div className="table-responsive shadow rounded-3 overflow-hidden">
+          <table className="table table-hover table-striped align-middle mb-0">
+            <thead className="table-primary text-white">
               <tr>
                 <th>Regulation</th>
                 <th>Semester</th>
@@ -81,12 +70,12 @@ const View = () => {
                 <tr key={paper._id}>
                   <td>{paper.regulation}</td>
                   <td>{paper.semester}</td>
-                  <td>{paper.subjectCode}</td>
+                  <td className="fw-bold text-primary">{paper.subjectCode}</td>
                   <td>{paper.year}</td>
                   <td>{paper.exam}</td>
                   <td>
                     <button
-                      className="btn btn-sm btn-primary"
+                      className="btn btn-success btn-sm fw-bold"
                       onClick={() => setSelectedPaper(paper)}
                     >
                       View
@@ -103,18 +92,16 @@ const View = () => {
       {viewMode === "card" && (
         <div className="row g-4">
           {papers.map((paper) => (
-            <div key={paper._id} className="col-md-4 col-sm-6">
-              <div className="card shadow-sm border-0 h-100">
-                <div className="card-body">
-                  <h5 className="card-title fw-bold text-primary">
-                    {paper.subjectCode}
-                  </h5>
-                  <p><strong>Regulation:</strong> {paper.regulation}</p>
-                  <p><strong>Semester:</strong> {paper.semester}</p>
-                  <p><strong>Year:</strong> {paper.year}</p>
-                  <p><strong>Exam:</strong> {paper.exam}</p>
+            <div key={paper._id} className="col-lg-4 col-md-6 col-sm-12 d-flex">
+              <div className="card shadow-sm border-0 flex-fill">
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title fw-bold text-primary">{paper.subjectCode}</h5>
+                  <p className="mb-1"><strong>Regulation:</strong> {paper.regulation}</p>
+                  <p className="mb-1"><strong>Semester:</strong> {paper.semester}</p>
+                  <p className="mb-1"><strong>Year:</strong> {paper.year}</p>
+                  <p className="mb-3"><strong>Exam:</strong> {paper.exam}</p>
                   <button
-                    className="btn btn-outline-success w-100"
+                    className="btn btn-success mt-auto fw-bold"
                     onClick={() => setSelectedPaper(paper)}
                   >
                     View Paper
@@ -126,28 +113,19 @@ const View = () => {
         </div>
       )}
 
-      {/* Modal for Inline Preview */}
+      {/* Modal Preview */}
       {selectedPaper && (
         <div
           className="modal fade show d-block"
           tabIndex="-1"
-          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           onClick={() => setSelectedPaper(null)}
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
         >
-          <div
-            className="modal-dialog modal-xl modal-dialog-centered"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-dialog modal-xl modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content border-0 shadow-lg">
               <div className="modal-header bg-primary text-white">
-                <h5 className="modal-title">
-                  {selectedPaper.subjectCode} – Question Paper
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setSelectedPaper(null)}
-                ></button>
+                <h5 className="modal-title">{selectedPaper.subjectCode} – Question Paper</h5>
+                <button type="button" className="btn-close" onClick={() => setSelectedPaper(null)}></button>
               </div>
               <div className="modal-body p-0" style={{ height: "80vh" }}>
                 <iframe
